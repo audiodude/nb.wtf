@@ -1,7 +1,9 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import os
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 import flask
@@ -11,7 +13,9 @@ import requests
 app = flask.Flask(__name__)
 MONGODB_URI = os.environ['MONGODB_URI']
 PAGE_URL = os.environ['PAGE_URL']
+WIKI_BASE_URL = os.environ['WIKI_BASE_URL']
 USER_AGENT = 'nb-wtf/1.0 <audiodude@gmail.com>'
+
 
 def update_db(mapping):
   client = MongoClient(MONGODB_URI)
@@ -19,6 +23,7 @@ def update_db(mapping):
 
   for slug, url in mapping.items():
     client.nbwtf.links.insert_one({'slug': slug, 'url': url})
+
 
 @app.route('/api/v1/on_update')
 def update():
@@ -40,9 +45,18 @@ def update():
 
   return 'Updated!'
 
-  @app.route('/<slug>')
-  def redirect(slug):
-    print(slug)
-    client = MongoClient(MONGODB_URI)
-    link = client.nbwtf.links.find_one({'slug': slug})
-    return flask.redirect(link['url'])
+
+@app.route('/<slug>')
+def redirect(slug):
+  client = MongoClient(MONGODB_URI)
+  link = client.nbwtf.links.find_one({'slug': slug})
+  if not link:
+    flask.abort(404)
+
+  final_link = link['url']
+  print(final_link)
+  if not final_link.startswith('http'):
+    final_link = urljoin(WIKI_BASE_URL, final_link)
+  print(final_link)
+
+  return flask.redirect(final_link)
