@@ -56,9 +56,7 @@ def redirect(slug):
     flask.abort(404)
 
   final_link = link['url']
-  print(final_link)
   if not final_link.startswith('http'):
     final_link = urljoin(WIKI_BASE_URL, final_link)
-  print(final_link)
 
   return flask.redirect(final_link)
