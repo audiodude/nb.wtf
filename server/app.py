@@ -27,6 +27,8 @@ def update_db(mapping):
 
 @app.route('/api/v1/on_update')
 def update():
+  print('on_update')
+
   resp = requests.get(PAGE_URL, headers={'User-Agent': USER_AGENT})
   resp.raise_for_status()
 
