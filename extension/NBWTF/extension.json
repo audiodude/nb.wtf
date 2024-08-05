@@ -4,7 +4,7 @@
   "url": "https://github.com/audiodude/nb.wtf",
   "description": "Adds hook to page save (for Nb.wtf page) to update nb.wtf link shortner",
   "version": "0.1",
-  "license-name": "GPL-2.0-or-later",
+  "license-name": "MIT",
   "type": "validextensionclass",
   "manifest_version": 2,
   "AutoloadNamespaces": {
