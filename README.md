@@ -33,6 +33,6 @@ Basically, the extension provides an "on page save" hook that simply calls the `
 the server at nb.wtf. The URL of the server is hardcoded into the extension. This keeps the wiki page
 and the server in sync.
 
-=== More information
+### More information
 
 For more information, contact [https://www.noisebridge.net/wiki/User:Audiodude](Travis/audiodude).
