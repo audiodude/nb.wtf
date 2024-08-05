@@ -24,6 +24,9 @@ def update_db(mapping):
   for slug, url in mapping.items():
     client.nbwtf.links.insert_one({'slug': slug, 'url': url})
 
+@app.route('/')
+def index():
+  return flask.redirect('https://www.noisebridge.net/wiki/Nb.wtf')
 
 @app.route('/api/v1/on_update')
 def update():
