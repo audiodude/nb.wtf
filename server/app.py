@@ -51,6 +51,11 @@ def update():
   return 'Updated!'
 
 
+@app.route('/w/<slug>')
+def wiki_redirect(slug):
+  final_link = urljoin(WIKI_BASE_URL, slug)
+  return flask.redirect(final_link)
+
 @app.route('/<slug>')
 def redirect(slug):
   client = MongoClient(MONGODB_URI)
