@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from io import BytesIO
 import os
 from urllib.parse import urljoin
 
@@ -9,6 +10,7 @@ from bs4 import BeautifulSoup
 import flask
 from pymongo import MongoClient
 import requests
+import segno
 
 app = flask.Flask(__name__)
 MONGODB_URI = os.environ['MONGODB_URI']
@@ -23,6 +25,19 @@ def update_db(mapping):
 
   for slug, url in mapping.items():
     client.nbwtf.links.insert_one({'slug': slug, 'url': url})
+
+
+def qr_code(link, mimetype='image/png', scale=8):
+  qrcode = segno.make(link)
+  out = BytesIO()
+  if mimetype == 'image/svg+xml':
+    qrcode.save(out, kind='svg', scale=scale)
+  elif mimetype == 'image/png':
+    qrcode.save(out, kind='png', scale=scale)
+  else:
+    raise ValueError('Invalid mimetype')
+  out.seek(0)
+  return out
 
 @app.route('/')
 def index():
@@ -66,6 +81,15 @@ def redirect(slug):
   final_link = link['url']
   if not final_link.startswith('http'):
     final_link = WIKI_BASE_URL + final_link
+
+
+  if 'qr' in flask.request.args:
+    print('generating QR code')
+    mimetype = 'image/png'
+    if flask.request.args['qr'] == 'svg':
+      mimetype = 'image/svg+xml'
+    scale = int(flask.request.args.get('s', 8))
+    return flask.send_file(qr_code(final_link, mimetype=mimetype, scale=scale), mimetype=mimetype)
 
   print('redirecting to', final_link)
   return flask.redirect(final_link)
